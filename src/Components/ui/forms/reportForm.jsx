@@ -6,20 +6,17 @@ import InputLabel from "@mui/material/InputLabel";
 import React from "react";
 import Box from "@mui/material/Box";
 import Swal from "sweetalert2";
-import { postTask, getTask } from "../../api/apiTask";
-import { UserContext } from "../../context/authContext";
+import { getTask, updateTaskId } from "../../api/apiTask";
 
-function TaskForm({ setTask, handleClose }) {
-  const currentUser = React.useContext(UserContext);
+function ReportForm({ setTask, handleClose }) {
   const { handleSubmit, control } = useForm();
   const { errors } = useFormState({
     control,
   });
   const onSubmit = async (data) => {
-    const authorId = currentUser.id;
-    const result = { ...data, authorId };
     try {
-      await postTask(result);
+      console.log(1, data);
+      await updateTaskId(data, data.id);
       Swal.fire({
         showCloseButton: false,
         showCancelButton: false,
@@ -52,15 +49,34 @@ function TaskForm({ setTask, handleClose }) {
         <form onSubmit={handleSubmit(onSubmit)} style={{ borderright: "25%" }}>
           <Controller
             control={control}
-            name="taskExecutorId"
+            name="id"
+            rules={{ required: "обязательно к заполнению" }}
+            render={({ field }) => (
+              <TextField
+                autoFocus
+                margin="dense"
+                name="id"
+                label="Идентификатор"
+                type="text"
+                fullWidth={true}
+                onChange={(e) => field.onChange(e)}
+                value={field.value || ""}
+                error={!!errors.id?.message}
+                helperText={errors.id?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="executorDescription"
             rules={{ required: "обязательно к заполнению" }}
             render={({ field }) => (
               <TextField
                 style={{ marginTop: "10%" }}
                 autoFocus
                 margin="dense"
-                name="taskExecutorId"
-                label="идентификатор исполнителя"
+                name="executorDescription"
+                label="Короткий доклад"
                 type="text"
                 fullWidth={true}
                 onChange={(e) => field.onChange(e)}
@@ -70,44 +86,7 @@ function TaskForm({ setTask, handleClose }) {
               />
             )}
           />
-          <Controller
-            control={control}
-            name="taskDescription"
-            rules={{ required: "обязательно к заполнению" }}
-            render={({ field }) => (
-              <TextField
-                autoFocus
-                margin="dense"
-                name="taskDescription"
-                label="Описание задачи"
-                type="text"
-                fullWidth={true}
-                onChange={(e) => field.onChange(e)}
-                value={field.value || ""}
-                error={!!errors.taskDescription?.message}
-                helperText={errors.taskDescription?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="taskEndDate"
-            rules={{ required: "обязательно к заполнению" }}
-            render={({ field }) => (
-              <TextField
-                autoFocus
-                margin="dense"
-                name="taskEndDate"
-                label="Дата исполнения задачи"
-                type="text"
-                fullWidth={true}
-                onChange={(e) => field.onChange(e)}
-                value={field.value || ""}
-                error={!!errors.taskEndDate?.message}
-                helperText={errors.taskEndDate?.message}
-              />
-            )}
-          />
+
           <Controller
             style={{ marginTop: "10%" }}
             control={control}
@@ -139,7 +118,7 @@ function TaskForm({ setTask, handleClose }) {
             )}
           />
           <Button type="submit" fullWidth={true} variant="contained">
-            поставить задачу
+            доложить о выполнении
           </Button>
         </form>
       </Box>
@@ -147,4 +126,4 @@ function TaskForm({ setTask, handleClose }) {
   );
 }
 
-export default TaskForm;
+export default ReportForm;

@@ -39,7 +39,7 @@ h1 {
   margin: 0 auto;
 }
 
-.home {
+/*.home {
   min-height: calc(100vh - 85px - 22px);
   background-image: url('https://avatars.mds.yandex.net/i?id=5c59ef6470d96b1487471887c576230a3083a63a-12391223-images-thumbs&n=13');
   background-repeat: no-repeat;
@@ -49,7 +49,7 @@ h1 {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-}
+}*/
  
   main a:hover {
       text-decoration: underline;

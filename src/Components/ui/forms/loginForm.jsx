@@ -2,9 +2,9 @@ import { Button, TextField } from "@mui/material";
 import { Controller, useForm, useFormState } from "react-hook-form";
 import React from "react";
 import Box from "@mui/material/Box";
-import { login } from "./api/ApiAuth";
-import { setAuthToken } from "../utils/axiosClient";
-import Cookies from 'js-cookie';
+import { login } from "../../api/ApiAuth";
+import { setAuthToken } from "../../../utils/axiosClient";
+import Cookies from "js-cookie";
 import { decodeToken } from "react-jwt";
 
 function LoginForm() {
@@ -12,15 +12,14 @@ function LoginForm() {
   const onSubmit = async (data) => {
     const res = await login(data);
     await setAuthToken(res.data.access_token);
-    const token =  Cookies.get()
+   const token = Cookies.get(); 
     const myDecodedToken = decodeToken(token.auth_token);
-   // console.log(24, myDecodedToken)
-    if(myDecodedToken.role === 'admin'){
-      window.location = "/"
-    }else{
-      window.location = "/"
+    // console.log(24, myDecodedToken)
+    if (myDecodedToken.role === "admin") {
+      window.location = "/home";
+    } else {
+      window.location = "/";
     }
-   
   };
   const { errors } = useFormState({
     control,
