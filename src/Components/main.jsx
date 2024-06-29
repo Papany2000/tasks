@@ -1,16 +1,24 @@
 import React from "react";
 import Button from "@mui/material/Button";
-import BasicModal from "./ui/modal";
-import TaskForm from "./ui/forms/taskForm";
 import DataTable from "./ui/dataTable";
 import { getTaskList } from "./api/apiTask";
+import ReportDialog from "./ui/reportModal";
+import TaskDialog from "./ui/taskModal";
 
 const Main = () => {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+
   const [error, setError] = React.useState("");
   const [task, setTask] = React.useState([]);
+  const [taskOpen, setTaskOpen] = React.useState(false)
+  const [reportOpen, setReportOpen] = React.useState(false)
+  
+  const handleTask = (event) => {
+    setTaskOpen(true)
+  }
+  
+  const handleReport = (event) => {
+    setReportOpen(true)
+  }
 
   React.useEffect(() => {
     setError(""); // очистка ошибки при вторичной загрузке
@@ -84,14 +92,16 @@ const Main = () => {
   ];
   return (
     <div className={"main"}>
-      <Button onClick={handleOpen}>Поставить задачу</Button>
+      <Button onClick={handleTask} >
+        Поставить задачу
+      </Button>
+      <Button onClick={handleReport} >
+        Доложить о выполнении
+      </Button>
       <h3 style={{ width: "100%", textAlign: "center" }}>Список задач</h3>
       <DataTable rows={rows} columns={columns} />
-      <BasicModal
-        open={open}
-        handleClose={handleClose}
-        children={<TaskForm setTask={setTask} handleClose={handleClose} />}
-      />
+      <TaskDialog open={taskOpen} setTaskOpen={setTaskOpen} setReportOpen={setReportOpen} setTask={setTask} />
+      <ReportDialog open={reportOpen} setTaskOpen={setTaskOpen} setReportOpen={setReportOpen} setTask={setTask} />
     </div>
   );
 };

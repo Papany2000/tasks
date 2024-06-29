@@ -12,13 +12,12 @@ function LoginForm() {
   const onSubmit = async (data) => {
     const res = await login(data);
     await setAuthToken(res.data.access_token);
-   const token = Cookies.get(); 
+    const token = Cookies.get(); 
     const myDecodedToken = decodeToken(token.auth_token);
-    // console.log(24, myDecodedToken)
-    if (myDecodedToken.role === "admin") {
-      window.location = "/home";
-    } else {
+    if (myDecodedToken) {
       window.location = "/";
+    } else {
+      window.location = "/login";
     }
   };
   const { errors } = useFormState({

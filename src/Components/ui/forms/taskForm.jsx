@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { postTask, getTask } from "../../api/apiTask";
 import { UserContext } from "../../context/authContext";
 
-function TaskForm({ setTask, handleClose }) {
+function TaskForm({ setTask }) {
   const currentUser = React.useContext(UserContext);
   const { handleSubmit, control } = useForm();
   const { errors } = useFormState({
@@ -31,7 +31,6 @@ function TaskForm({ setTask, handleClose }) {
         timer: 1500,
       });
       setTask((await getTask()).data.data);
-      handleClose();
     } catch (e) {
       Swal.fire({
         showCloseButton: false,

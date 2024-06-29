@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import Swal from "sweetalert2";
 import { getTask, updateTaskId } from "../../api/apiTask";
 
-function ReportForm({ setTask, handleClose }) {
+function ReportForm({ setTask }) {
   const { handleSubmit, control } = useForm();
   const { errors } = useFormState({
     control,
@@ -28,7 +28,7 @@ function ReportForm({ setTask, handleClose }) {
         timer: 1500,
       });
       setTask((await getTask()).data.data);
-      handleClose();
+     
     } catch (e) {
       Swal.fire({
         showCloseButton: false,
