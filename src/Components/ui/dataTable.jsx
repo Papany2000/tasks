@@ -12,8 +12,12 @@ const DataTable = ({ rows, columns }) => {
         rowsPerPageOptions={[5]}
         checkboxSelection
         sx={{
-          ".MuiDataGrid-columnHeaderTitle": { fontWeight: "bold" },
-          ".MuiDataGrid-cell--textCenter": { color: "lightGree" },
+          ".MuiDataGrid-columnHeaderTitle": { fontWeight: "bold", fontSize: '16px' },
+          "& .MuiDataGrid-virtualScrollerRenderZone": {                                          // полосатая заливка
+            "& .MuiDataGrid-row": {
+              "&:nth-child(2n-1)": { backgroundColor: "rgba(235, 235, 235, .7)" }
+            }
+          },
         }}
       />
     </div>

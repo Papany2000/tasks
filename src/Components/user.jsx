@@ -26,8 +26,17 @@ const User = () => {
   const rows = user;
   const columns = [
     {
-      field: "firstName",
+      field: "id",
       width: 180,
+      headerName: "идентификатор",
+      editable: true,
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "firstName",
+      minWidth: 200,
+      flex:1,
       headerName: "Имя",
       editable: true,
       headerAlign: "center",
@@ -37,13 +46,15 @@ const User = () => {
       field: "secondName",
       headerName: "Отчество",
       editable: true,
-      width: 180,
+      minWidth: 200,
+      flex: 1,
       headerAlign: "center",
       align: "center",
     },
     {
       field: "lastName",
-      width: 180,
+      minWidth: 200,
+      flex: 1,
       headerName: "Фамилия",
       editable: true,
       headerAlign: "center",

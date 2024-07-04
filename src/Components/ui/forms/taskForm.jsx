@@ -8,6 +8,8 @@ import Box from "@mui/material/Box";
 import Swal from "sweetalert2";
 import { postTask, getTask } from "../../api/apiTask";
 import { UserContext } from "../../context/authContext";
+import DatePicker from "react-multi-date-picker";
+import { Language } from "@mui/icons-material";
 
 function TaskForm({ setTask }) {
   const currentUser = React.useContext(UserContext);
@@ -91,20 +93,31 @@ function TaskForm({ setTask }) {
           <Controller
             control={control}
             name="taskEndDate"
-            rules={{ required: "обязательно к заполнению" }}
-            render={({ field }) => (
-              <TextField
-                autoFocus
-                margin="dense"
-                name="taskEndDate"
-                label="Дата исполнения задачи"
-                type="text"
-                fullWidth={true}
-                onChange={(e) => field.onChange(e)}
-                value={field.value || ""}
-                error={!!errors.taskEndDate?.message}
-                helperText={errors.taskEndDate?.message}
-              />
+            rules={{ required: true }} //optional
+            render={({
+              field: { onChange, name, value },
+              fieldState: { invalid, isDirty }, //optional
+              formState: { errors }, //optional, but necessary if you want to show an error message
+            }) => (
+              <>
+                <label>дата выполнения</label>
+                <DatePicker
+                  style={{
+                    width: "100%",
+                    boxSizing: "border-box",
+                    height: "56px"
+                  }}
+                  value={value || "2024/07/11"}
+                  onChange={(taskEndDate) => {
+                    onChange(taskEndDate?.isValid ? taskEndDate : "");
+                  }}
+                  format={Language === "en" ? "MM/DD/YYYY" : "YYYY/MM/DD"}
+                />
+                {errors && errors[name] && errors[name].type === "required" && (
+                  //if you want to show an error message
+                  <span>your error message !</span>
+                )}
+              </>
             )}
           />
           <Controller
@@ -114,7 +127,7 @@ function TaskForm({ setTask }) {
             rules={{ required: "обязательно к заполнению" }}
             render={({ field }) => (
               <div>
-                <InputLabel style={{ paddingLeft: "1rem", fontSize: "0.8rem" }}>
+                <InputLabel style={{ paddingLeft: "1rem", fontSize: "0.9rem" }}>
                   Id статус
                 </InputLabel>
                 <Select

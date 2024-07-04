@@ -2,22 +2,27 @@ import React from "react";
 import Button from "@mui/material/Button";
 import DataTable from "./ui/dataTable";
 import { getTaskList } from "./api/apiTask";
-import ReportDialog from "./ui/reportModal";
-import TaskDialog from "./ui/taskModal";
+import TaskForm from "./ui/forms/taskForm";
+import ReportForm from "./ui/forms/reportForm";
+import BasicModal from "./ui/modal";
+
 
 const Main = () => {
 
+  const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [task, setTask] = React.useState([]);
-  const [taskOpen, setTaskOpen] = React.useState(false)
-  const [reportOpen, setReportOpen] = React.useState(false)
-  
-  const handleTask = (event) => {
-    setTaskOpen(true)
+  const [swith, setSwith] = React.useState(false)
+  const handleOpenTask = () => {
+    setSwith(true)
+    setOpen(true)
   }
-  
-  const handleReport = (event) => {
-    setReportOpen(true)
+  const handleOpenReport = () => {
+    setSwith(false)
+    setOpen(true)
+  }
+  const handleClose = () => {
+    setOpen(false)
   }
 
   React.useEffect(() => {
@@ -35,8 +40,8 @@ const Main = () => {
   const columns = [
     {
       field: "id",
-      width: 80,
-      headerName: "идентификатор",
+      width: 60,
+      headerName: "id",
       editable: true,
       headerAlign: "center",
       align: "center",
@@ -59,7 +64,8 @@ const Main = () => {
     },
     {
       field: "taskDescription",
-      width: 490,
+      minWidth: 490,
+      flex: 1,
       headerName: "Постановка задачи",
       editable: true,
       headerAlign: "center",
@@ -69,7 +75,7 @@ const Main = () => {
       field: "taskEndDate",
       headerName: "Дата выполнения",
       editable: true,
-      width: 150,
+      width: 200,
       headerAlign: "center",
       align: "center",
     },
@@ -77,7 +83,8 @@ const Main = () => {
       field: "executorDescription",
       headerName: "Доклад исполнителя",
       editable: true,
-      width: 200,
+      minWidth: 200,
+      flex: 1,
       headerAlign: "center",
       align: "center",
     },
@@ -85,25 +92,28 @@ const Main = () => {
       field: "statusId",
       headerName: "Статус",
       editable: true,
-      width: 80,
+      width: 100,
       headerAlign: "center",
       align: "center",
     },
   ];
   return (
     <div className={"main"}>
-      <Button onClick={handleTask} >
-        Поставить задачу
-      </Button>
-      <Button onClick={handleReport} >
-        Доложить о выполнении
-      </Button>
+      <p>
+        <Button onClick={handleOpenTask}>Поставить задачу</Button>
+      </p>
+      <p>
+        <Button onClick={handleOpenReport}>Доложить о выполнении</Button>
+      </p>
       <h3 style={{ width: "100%", textAlign: "center" }}>Список задач</h3>
       <DataTable rows={rows} columns={columns} />
-      <TaskDialog open={taskOpen} setTaskOpen={setTaskOpen} setReportOpen={setReportOpen} setTask={setTask} />
-      <ReportDialog open={reportOpen} setTaskOpen={setTaskOpen} setReportOpen={setReportOpen} setTask={setTask} />
+      <BasicModal
+        open={open}
+        handleClose={handleClose}
+        children={swith ? <TaskForm setTask={setTask} handleClose={handleClose} /> : <ReportForm setTask={setTask} handleClose={handleClose} />}
+      />
     </div>
   );
 };
 
-export default Main;
+export default Main
