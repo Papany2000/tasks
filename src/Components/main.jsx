@@ -1,30 +1,18 @@
 import React from "react";
-import Button from "@mui/material/Button";
-import DataTable from "./ui/dataTable";
-import { getTaskList } from "./api/apiTask";
-import TaskForm from "./ui/forms/taskForm";
-import ReportForm from "./ui/forms/reportForm";
-import BasicModal from "./ui/modal";
+import { getTaskList, updateTaskId } from "./api/apiTask";
+import FullFeaturedCrudGrid from "./ui/dataGrid";
+import { GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 const Main = () => {
 
-  const [open, setOpen] = React.useState(false);
-  const [error, setError] = React.useState("");
   const [task, setTask] = React.useState([]);
-  const [swith, setSwith] = React.useState(false)
-  const handleOpenTask = () => {
-    setSwith(true)
-    setOpen(true)
-  }
-  const handleOpenReport = () => {
-    setSwith(false)
-    setOpen(true)
-  }
-  const handleClose = () => {
-    setOpen(false)
-  }
-
+  const [error, setError] = React.useState("");
+  const [rowModesModel, setRowModesModel] = React.useState({});
   React.useEffect(() => {
     setError(""); // очистка ошибки при вторичной загрузке
     getTaskList()
@@ -35,6 +23,33 @@ const Main = () => {
         setError(error.message);
       });
   }, []);
+  const handleEditClick = id => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+  };
+
+  const handleSaveClick = id => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  };
+
+  const handleDeleteClick = id => async () => {
+    const res = window.confirm("Вы уверены");
+    if (!res) {
+      return false;
+    }
+    await updateTaskId(id);
+    setTask((await getTaskList()).data);
+  };
+
+  const handleCancelClick = id => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
+    });
+    const editedRow = rows.find(row => row.id === id);
+    if (editedRow.isNew) {
+      setTask(rows.filter(row => row.id !== id));
+    }
+  };
 
   const rows = task;
   const columns = [
@@ -96,21 +111,61 @@ const Main = () => {
       headerAlign: "center",
       align: "center",
     },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      cellClassName: 'actions',
+      getActions: ({ id }) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              icon={<SaveIcon />}
+              label="Save"
+              sx={{
+                color: 'primary.main',
+              }}
+              onClick={handleSaveClick(id)}
+            />,
+            <GridActionsCellItem
+              icon={<CancelIcon />}
+              label="Cancel"
+              className="textPrimary"
+              onClick={handleCancelClick(id)}
+              color="inherit"
+            />,
+          ];
+        }
+
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={handleDeleteClick(id)}
+            color="inherit"
+            disabled={true}
+          />,
+        ];
+      },
+    },
   ];
   return (
     <div className={"main"}>
-      <p>
-        <Button onClick={handleOpenTask}>Поставить задачу</Button>
-      </p>
-      <p>
-        <Button onClick={handleOpenReport}>Доложить о выполнении</Button>
-      </p>
-      <h3 style={{ width: "100%", textAlign: "center" }}>Список задач</h3>
-      <DataTable rows={rows} columns={columns} />
-      <BasicModal
-        open={open}
-        handleClose={handleClose}
-        children={swith ? <TaskForm setTask={setTask} handleClose={handleClose} /> : <ReportForm setTask={setTask} handleClose={handleClose} />}
+      <h2>Ваши задачи и ход их выполнения</h2>
+      <FullFeaturedCrudGrid rows={rows}
+        columns={columns}
+        setFunction={setTask}
+        setRowModesModel={setRowModesModel}
+        rowModesModel={rowModesModel}
       />
     </div>
   );
